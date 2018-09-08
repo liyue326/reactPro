@@ -6,17 +6,27 @@ module.exports = {
   entry: './src/app.jsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    publicPath: "/dist/",   // f访问目录从 ／dist/index.html开始了
+    publicPath: "/dist/", // f访问目录从 ／dist/index.html开始了
     filename: 'js/app.js'
+  },
+  resolve: {
+    alias: {
+      page: path.resolve(__dirname, 'src/pages'), // path.resolve __dirname 是指当前路径也就是根目录
+      component: path.resolve(__dirname, 'src/component')
+    }
   },
   plugins: [
     new HtmlwebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html',
+      favicon: './favicon.ico'
     }),
     new ExtractTextPlugin('index.css') // 一直出错是因为这块没有传参数
   ],
   devServer: {
-    port: 8086
+    port: 8086,
+    historyApiFallback: {
+      index: '/dist/index.html'   // 404页面默认都到这
+    }
   },
   module: {
     rules: [
@@ -54,7 +64,7 @@ module.exports = {
           loader: 'url-loader',
           options: {
             limit: 8192,
-            name: 'assets/img/[name].[ext]'   // 也就是路径
+            name: 'assets/img/[name].[ext]' // 也就是路径
           }
         }]
       }
