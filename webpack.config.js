@@ -1,18 +1,23 @@
 const path = require('path');
 const HtmlwebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+let env= process.env.WEBPACK_ENV;
+console.log(env)
 // 单独生层css文件 不和 js混在一起 因为js加载完css才会加载会有白屏所以提出css文件
 module.exports = {
   entry: './src/app.jsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    publicPath: "/dist/", // f访问目录从 ／dist/index.html开始了
+    publicPath: env === "dev"?"/dist/":'www.baidu.com', // f访问目录从 ／dist/index.html开始了
     filename: 'js/app.js'
   },
   resolve: {
     alias: {
       page: path.resolve(__dirname, 'src/pages'), // path.resolve __dirname 是指当前路径也就是根目录
-      component: path.resolve(__dirname, 'src/component')
+      component: path.resolve(__dirname, 'src/component'),
+      util: path.relative(__dirname, 'src/util'),
+      src: path.resolve(__dirname, 'src'),
+      server: path.resolve(__dirname, 'server')
     }
   },
   plugins: [
@@ -25,8 +30,19 @@ module.exports = {
   devServer: {
     port: 8086,
     historyApiFallback: {
-      index: '/dist/index.html'   // 404页面默认都到这
+      index: '/dist/index.html' // 404页面默认都到这
+    },
+    proxy: {
+      '/manage': {
+        target: 'http://admintest.happymmall.com',
+        changeOrigin: true,
+      },
+      '/user/logout.do': {
+        target: 'http://admintest.happymmall.com',
+        changeOrigin: true
+      },
     }
+    //devserver自带的代理 
   },
   module: {
     rules: [
